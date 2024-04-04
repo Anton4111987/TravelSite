@@ -68,6 +68,8 @@ function login($login, $pass)
     $res = $link->query($sel);
     if ($row = $res->fetch_assoc()) {
         $_SESSION["user"] = $login;
+        // echo $row["id"];
+        $_SESSION["id"]= $row["id"];
         //если у пользователя роль админа
         if ($row["roleid"] == 1) {
             $_SESSION["admin"] = $login;
@@ -79,6 +81,38 @@ function login($login, $pass)
     }
 }
 
+function createtablecomments()
+{
+    $link=connect();
+    $resultcomments = $link->query("SHOW TABLES LIKE 'comments'");
+                    if ($resultcomments) 
+                    {
+                        if($resultcomments->num_rows == 1) 
+                        {
+                            echo "Таблицы имеются в базе данных";
+                        } 
+                        else
+                        {
+                            $create = "create table comments( 
+                                id int not null auto_increment primary key,
+                                comment VARCHAR(65535),
+                                hotelid int,
+                                foreign key(hotelid) references hotels(id) on delete cascade,
+                                userid int,
+                                foreign key(userid) references users(id) on delete cascade         
+                            )";
+                            if ($link->query($create)) {
+                                echo "Таблица Comments(комментариев) успешно создана";
+                            } 
+                            else 
+                            {
+                                echo "Ошибка: " . $link->error;
+                            }
+                        }
+                    //перезагрузка страницы
+                    // echo "<script>window.location=document.URL</script>";
+                    }                
+}
 
 ?>
  
